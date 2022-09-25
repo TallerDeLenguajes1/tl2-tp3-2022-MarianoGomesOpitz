@@ -30,7 +30,7 @@ public class Pedido
 
 enum status
 {
-    Preparando = 1,
+    En_Preparación = 1,
     En_Camino = 2,
     Entregado = 3,
 }

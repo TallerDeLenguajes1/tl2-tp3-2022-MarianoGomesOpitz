@@ -51,7 +51,29 @@ internal class Program
         var lectura = File.ReadAllLines(archivoCadeterias);
         int posicion = rand.Next(lectura.Length);
         var eleccion = (lectura[posicion]).Split(", ");
-        var cadetaria = new Cadeteria(eleccion[0], eleccion[1], listaCadetes);
+        var cadeteria = new Cadeteria(eleccion[0], eleccion[1], listaCadetes);
+
+        Console.WriteLine($"\nCadetería: {cadeteria.Nombre}");
+        Console.WriteLine($"Teléfono: {cadeteria.Telefono}");
+        Console.WriteLine($"Cadetes:");
+        foreach (var item_1 in cadeteria.Cadetes)
+        {
+            Console.WriteLine($"\n    ID: {item_1.Id}");
+            Console.WriteLine($"    Nombre: {item_1.Nombre}");
+            Console.WriteLine($"    Teléfono: {item_1.Telefono}");
+            Console.WriteLine($"    Dirección: {item_1.Direccion}");
+            Console.WriteLine($"    Pedidos asignados:");
+            foreach (var item_2 in item_1.Pedidos)
+            {
+                Console.WriteLine($"\n        Nro de pedido: {item_2.NroPedido}");
+                Console.WriteLine($"        Observaciones: {item_2.Observaciones}");
+                Console.WriteLine($"        Estado: {item_2.Estado}");
+                Console.WriteLine($"        Nombre del cliente: {item_2.Costumer.Nombre}");
+                Console.WriteLine($"        Teléfono: {item_2.Costumer.Telefono}");
+                Console.WriteLine($"        Dirección: {item_2.Costumer.Direccion}");
+                Console.WriteLine($"        Datos de referencia de la dirección: {item_2.Costumer.DatosReferenciaDireccion}");
+            }
+        }
     }
 
     private static void ClientePedido(List<Pedido> listaPedidos, int i, string[] eleccion)
