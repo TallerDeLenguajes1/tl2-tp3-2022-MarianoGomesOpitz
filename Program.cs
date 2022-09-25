@@ -141,7 +141,7 @@ internal class Program
         } while (conf != 'q' && conf != 'Q');
     }
 
-//****************************************************************FUNCIONES
+    //****************************************************************FUNCIONES
     private static void CambiarDeCadete() { }
 
     private static void CambiarDeEstado() { }
@@ -164,21 +164,41 @@ internal class Program
                 }
             }
 
-            Console.WriteLine("\nSelecciones el número de pedido a asignar:");
+            Console.Write("\nSelecciones el número de pedido a asignar: ");
             int nroPedido = Convert.ToInt32(Console.ReadLine());        //Selección del pedido a asignar
-            if (pedidosNoAsignados.ElementAtOrDefault(nroPedido - 1) != null)       //¿Existe un pedido con el índice ingresado?
+            Pedido pedidoSeleccionado = null;
+            foreach (var item in pedidosNoAsignados)
             {
-                Console.WriteLine("\nSeleccione el ID del cadete al cual asignarle el pedido");
-                int cade = Convert.ToInt32(Console.ReadLine());     //Selección del cadete a recibir la asignación
-                if (cadetes.ElementAtOrDefault(cade - 1) != null)       //¿Existe un cadete con el índice ingresado?
+                if (nroPedido == item.NroPedido)
                 {
-                    Console.WriteLine("\n¿Está seguro de asignar el pedido a este cadete?");
-                    Console.WriteLine("\'1\' para confirmar");      //Confirmación de la asignación
+                    pedidoSeleccionado = item;
+                }
+            }
+
+            if (pedidoSeleccionado != null)
+            {
+                Console.Write("\nSeleccione el ID del cadete a asignar el pedido: ");
+                int idCadete = Convert.ToInt32(Console.ReadLine());
+                Cadete cadeteSeleccionado = null;
+                foreach (var item in cadetes)
+                {
+                    if (idCadete == item.Id)
+                    {
+                        cadeteSeleccionado = item;
+                    }
+                }
+
+                if (cadeteSeleccionado != null)
+                {
+                    Console.WriteLine($"\n¿Está seguro de querer asignar el pedido Nro {pedidoSeleccionado.NroPedido} a nombre de {pedidoSeleccionado.Costumer.Nombre} al cadete {cadeteSeleccionado.Nombre}?");
+                    Console.WriteLine("\'1\' para confirmar");
                     verif = Console.ReadKey().KeyChar;
+
                     if (verif == '1')
                     {
-                        cadetes[cade - 1].Pedidos.Add(pedidosNoAsignados[nroPedido - 1]);       //Añado el pedido sin asignar a un cadete
-                        pedidosNoAsignados.RemoveAt(nroPedido - 1);     //Elimino el pedido de la lista de pedidos sin asignar
+                        cadeteSeleccionado.Pedidos.Add(pedidoSeleccionado);
+                        pedidosNoAsignados.Remove(pedidoSeleccionado);
+                        Console.WriteLine("\nAsignación exitosa");
                     }
                     else
                     {
@@ -194,6 +214,7 @@ internal class Program
             {
                 Console.WriteLine("\nNo existe tal pedido");
             }
+
             repe++;
         } while (true);
     }
@@ -218,7 +239,7 @@ internal class Program
         }
         else
         {
-            Console.WriteLine("No hay pedidos sin asignar");
+            Console.WriteLine("    No hay pedidos sin asignar");
         }
     }
     private static void MostrarInfo(Cadeteria cadeteria)
@@ -248,7 +269,7 @@ internal class Program
             }
             else
             {
-                Console.WriteLine("Este cadete no tiene ningún pedido asignado");
+                Console.WriteLine("        Este cadete no tiene ningún pedido asignado");
             }
         }
     }
