@@ -9,12 +9,12 @@ public class Cadete : Persona
 
     }
 
-    public Cadete(int i, string[] eleccion, List<Pedido> peds)
+    public Cadete(int i, string[] eleccion)
     {
         this.Id = i;
         this.Nombre = eleccion[0];
         this.Telefono = eleccion[1];
         this.Direccion = eleccion[2];
-        this.Pedidos = peds;
+        this.Pedidos = new List<Pedido>();
     }
 }

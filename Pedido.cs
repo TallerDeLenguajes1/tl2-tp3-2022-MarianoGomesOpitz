@@ -19,7 +19,7 @@ public class Pedido
     {
         this.NroPedido = i;
 
-        Console.WriteLine("¿Alguna observación acerca del pedido?");
+        Console.Write("¿Alguna observación acerca del pedido?: ");
         this.Observaciones = Console.ReadLine();
 
         this.Estado = Convert.ToString((status)est);

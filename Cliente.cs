@@ -15,7 +15,7 @@ public class Cliente : Persona
         this.Telefono = eleccion[1];
         this.Direccion = eleccion[2];
 
-        Console.WriteLine("Ingrese unos datos de referencia para la dirección");
+        Console.Write("Ingrese unos datos de referencia para la dirección: ");
         this.DatosReferenciaDireccion = Console.ReadLine();
     }
 }
