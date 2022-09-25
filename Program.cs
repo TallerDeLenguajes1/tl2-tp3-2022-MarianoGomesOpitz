@@ -53,45 +53,12 @@ internal class Program
         var eleccion = (lectura[posicion]).Split(", ");     //La trato como un arreglo
         var cadeteria = new Cadeteria(eleccion[0], eleccion[1], listaCadetes);      //Creo la cadetería con la información recopilada anteriormente
 
-        ///////////////////////////////////////////////////////////////////Creación de clientes y pedidos sin asignar
-        int repetido_cli;       //Variable para asegurarme que no se repitan nombres de clientes
+
         var listaPedidos = new List<Pedido>();      //Creo la lista de pedidos
-        int cantPedidos = rand.Next(1, 21);     //Cantidad de pedidos que pueden aparecer  
-        Console.WriteLine($"\nCantidad de pedidos en total: {cantPedidos}");
-        for (int i = 0; i < cantPedidos; i++)
-        {
-            repetido_cli = 0;       //Inicializo la variable en 0
-
-            int posicion2 = rand.Next(leer.Length);     //Obtengo la información de una parsona del archivo de nombres al azar
-            var eleccion_cli = (leer[posicion2]).Split(", ");       //Trato la información como arreglo
-
-            if (listaPedidos.Count != 0)        //Me pregunto si la lista de pedidos está vacía o no
-            {
-                foreach (var item in listaPedidos)      //Si no está vacía, la recorro 
-                {
-                    if (eleccion_cli[0] == item.Costumer.Nombre)        //Pregunto si se repitió la información obtenida
-                    {
-                        repetido_cli = 1;       //La variable en 1 indica que se repitió
-                    }
-                }
-
-                if (repetido_cli == 0)      //Pregunto si se repitió la información
-                {
-                    ClientePedido(listaPedidos, i + 1, eleccion_cli);       //Si no se repitió, creo el pedido a partir de la información recopilada
-                }
-                else
-                {
-                    i -= 1;     //Si se repitió, se repite todo lo anterior
-                }
-            }
-            else
-            {
-                ClientePedido(listaPedidos, i + 1, eleccion_cli);       //Si la lista está vacía, inserto la información
-            }
-        }
 
         ///////////////////////////////////////////////////////////////////
         char conf;      //Variable para manejar la interfaz principal
+        int pedidosCreados = 1;
         do
         {
             Console.WriteLine("\n\nQue acción desea llevar a cabo");
@@ -111,6 +78,7 @@ internal class Program
                     break;
 
                 case '2':
+                    pedidosCreados = DarDeAltaPedidos(listaPedidos, rand, leer, pedidosCreados);
                     break;
 
                 case '3':
@@ -125,9 +93,11 @@ internal class Program
                     break;
 
                 case '4':
+                    CambiarDeEstado(cadeteria.Cadetes);
                     break;
 
                 case '5':
+                    CambiarDeCadete(cadeteria.Cadetes);
                     break;
 
                 case 'q':
@@ -142,9 +112,111 @@ internal class Program
     }
 
     //****************************************************************FUNCIONES
-    private static void CambiarDeCadete() { }
+    private static void CambiarDeCadete(List<Cadete> cadetes)
+    {
 
-    private static void CambiarDeEstado() { }
+    }
+
+    private static void CambiarDeEstado(List<Cadete> cadetes)
+    {
+        char verif;
+        int repe = 0;
+        do
+        {
+            if (repe > 0)       //Si ya se ha realizado un proceso de asignación, pregunta lo siguiente
+            {
+                Console.WriteLine("\n¿Desea realizar otro cambio de estado?");
+                Console.WriteLine("\'1\' para confirmar");
+                verif = Console.ReadKey().KeyChar;
+
+                if (verif != '1')
+                {
+                    break;
+                }
+            }
+
+            Console.Write("\nSeleccione el ID del cadete que posee el pedido: ");
+            int idCadete = Convert.ToInt32(Console.ReadLine());
+            Cadete cadeteSeleccionado = null;
+            foreach (var item in cadetes)
+            {
+                if (idCadete == item.Id)
+                {
+                    cadeteSeleccionado = item;
+                }
+            }
+
+            if (cadeteSeleccionado != null)
+            {
+                if (cadeteSeleccionado.Pedidos.Count() > 0)
+                {
+                    Console.Write("\nSeleccione el Nro de pedido a cambiar de estado: ");
+                    int nroPedido = Convert.ToInt32(Console.ReadLine());
+                    Pedido pedidoSeleccionado = null;
+                    foreach (var item in cadeteSeleccionado.Pedidos)
+                    {
+                        if (nroPedido == item.NroPedido)
+                        {
+                            pedidoSeleccionado = item;
+                        }
+                    }
+
+                    if (pedidoSeleccionado != null)
+                    {
+                        Console.WriteLine("\nSeleccione el estado al cual cambiar el pedido:");
+                        Console.WriteLine("1: En preparación");
+                        Console.WriteLine("2: En camino");
+                        Console.WriteLine("3: Entregado");
+                        int est = Convert.ToInt32(Console.ReadLine());
+                        if (est >= 1 && est <= 3)
+                        {
+                            if (pedidoSeleccionado.Estado != Convert.ToString((status)est))
+                            {
+                                Console.WriteLine($"\n¿Está seguro que desea cambiar el estado del pedido {pedidoSeleccionado.NroPedido} de \"{pedidoSeleccionado.Estado}\" a \"{(status)est}\"?");
+                                Console.WriteLine("\'1\' para confirmar");
+                                verif = Console.ReadKey().KeyChar;
+
+                                if (verif == '1')
+                                {
+                                    pedidoSeleccionado.Estado = Convert.ToString((status)est);
+                                    Console.WriteLine("\nAsignación exitosa");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\nAsignación cancelada");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nEl pedido ya posee dicho estado");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nNo existe tal estado");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nNo existe tal pedido");
+                    }
+
+                    repe++;
+                }
+                else
+                {
+                    Console.WriteLine("\nEste cadete no tiene ningún pedido asignado");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\nNo existe dicho cadete");
+            }
+
+            repe++;
+        } while (true);
+
+    }
 
     private static void AsignarPedido(List<Pedido> pedidosNoAsignados, List<Cadete> cadetes)
     {
@@ -219,12 +291,63 @@ internal class Program
         } while (true);
     }
 
-    private static void DarDeAlta() { }
+    private static int DarDeAltaPedidos(List<Pedido> pedidosSinAsignar, Random rand, string[] leer, int pedidosCreados)
+    {
+        char verif;
+        int repe = 0;
+        do
+        {
+            if (repe > 0)       //Si ya se ha realizado un proceso de creación, pregunta lo siguiente
+            {
+                Console.WriteLine("\n¿Desea crear otro pedido?");
+                Console.WriteLine("\'1\' para confirmar");
+                verif = Console.ReadKey().KeyChar;
+
+                if (verif != '1')
+                {
+                    break;
+                }
+            }
+
+            int repetido = 0;
+            do
+            {
+                int posicion = rand.Next(leer.Length);     //Obtengo la información de una parsona del archivo de nombres al azar
+                var eleccion = (leer[posicion]).Split(", ");       //Trato la información como arreglo
+
+                if (pedidosSinAsignar.Count != 0)        //Me pregunto si la lista de pedidos está vacía o no
+                {
+                    foreach (var item in pedidosSinAsignar)      //Si no está vacía, la recorro 
+                    {
+                        if (eleccion[0] == item.Costumer.Nombre)        //Pregunto si se repitió la información obtenida
+                        {
+                            repetido = 1;       //La variable en 1 indica que se repitió
+                        }
+                    }
+
+                    if (repetido == 0)      //Pregunto si se repitió la información
+                    {
+                        ClientePedido(pedidosSinAsignar, pedidosCreados, eleccion);       //Si no se repitió, creo el pedido a partir de la información recopilada
+                        pedidosCreados++;
+                    }
+                }
+                else
+                {
+                    ClientePedido(pedidosSinAsignar, pedidosCreados, eleccion);       //Si la lista está vacía, inserto la información
+                    pedidosCreados++;
+                }
+            } while (repetido == 1);
+
+            repe++;
+        } while (true);
+
+        return (pedidosCreados);
+    }
 
     private static void MostrarPedidosNoAsignados(List<Pedido> pedidos)
     {
         Console.WriteLine("\nPedidos no asignados:");
-        if (pedidos.Count != 0)
+        if (pedidos.Count > 0)
         {
             foreach (var item in pedidos)
             {
@@ -254,7 +377,7 @@ internal class Program
             Console.WriteLine($"    Teléfono: {item_1.Telefono}");
             Console.WriteLine($"    Dirección: {item_1.Direccion}");
             Console.WriteLine($"    Pedidos asignados:");
-            if (item_1.Pedidos.Count != 0)
+            if (item_1.Pedidos.Count > 0)
             {
                 foreach (var item_2 in item_1.Pedidos)
                 {
