@@ -17,4 +17,20 @@ public class Cadete : Persona
         this.Direccion = eleccion[2];
         this.Pedidos = new List<Pedido>();
     }
+
+    public int JornalACobrar()
+    {
+        int montoBase = 300, montoGanado = 0, pedidosEntregados = 0;
+
+        foreach (var item in this.Pedidos)
+        {
+            if (item.Estado == Convert.ToString((status)3))
+            {
+                (pedidosEntregados)++;
+            }
+        }
+
+        montoGanado = pedidosEntregados * 300;
+        return (montoGanado);
+    }
 }

@@ -12,8 +12,7 @@ internal class Program
         ///////////////////////////////////////////////////////////////////Creación de cadetes
         int repetido_cad;       //Variable para asegurarme de que no se repitan nombres en los cadetes
         var listaCadetes = new List<Cadete>();      //Lista de cadetes
-        int cantCadetes = rand.Next(3, 7);      //Cantidad de cadetes que pueden aparecer
-        Console.WriteLine($"\nCantidad de cadetes: {cantCadetes}");
+        int cantCadetes = rand.Next(5, 11);      //Cantidad de cadetes que pueden aparecer
         for (int h = 0; h < cantCadetes; h++)
         {
             repetido_cad = 0;       //Inicializo la variable en 0
@@ -67,7 +66,7 @@ internal class Program
             Console.WriteLine("Asignar un pedido a un cadete: \'3\'");
             Console.WriteLine("Cambiar de estado un pedido: \'4\'");
             Console.WriteLine("Cambiar de cadete asignado un pedido: \'5\'");
-            Console.WriteLine("Parar programa: \'Q\'");
+            Console.WriteLine("Finalizar jornada laboral: \'F\'");
             conf = Console.ReadKey().KeyChar;
 
             switch (conf)
@@ -100,21 +99,146 @@ internal class Program
                     CambiarDeCadete(cadeteria.Cadetes);
                     break;
 
-                case 'q':
-                case 'Q':
+                case 'f':
+                case 'F':
+                    FinDeJornada(cadeteria.Cadetes);
                     break;
 
                 default:
                     Console.WriteLine("\nElección inválida");
                     break;
             }
-        } while (conf != 'q' && conf != 'Q');
+        } while (conf != 'f' && conf != 'F');
     }
 
     //****************************************************************FUNCIONES
+
+    private static void FinDeJornada(List<Cadete> listaCadetes)
+    {
+        int montoTotal = 0, montoPorCadete, pedidosTotales = 0, pedidosPorCadete;
+
+        foreach (var item in listaCadetes)
+        {
+            montoPorCadete = item.JornalACobrar();
+            pedidosPorCadete = montoPorCadete / 300;
+            Console.WriteLine($"\nCadete: {item.Nombre}");
+            Console.WriteLine($"Paquetes entregados: {pedidosPorCadete}");
+            Console.WriteLine($"Dinero ganado: {montoPorCadete}");
+
+            pedidosTotales += pedidosPorCadete;
+            montoTotal += montoPorCadete;
+        }
+
+        double enviosPromedio = Convert.ToDouble(pedidosTotales) / listaCadetes.Count();
+
+        Console.WriteLine($"\nPedidos entregados en total: {pedidosTotales}");
+        Console.WriteLine($"Monto total ganado: {montoTotal}");
+        Console.WriteLine($"Promedio de pedidos entregados por cadete: {enviosPromedio}");
+    }
+
     private static void CambiarDeCadete(List<Cadete> cadetes)
     {
+        char verif;
+        int repe = 0;
+        do
+        {
+            if (repe > 0)       //Si ya se ha realizado un proceso de asignación, pregunta lo siguiente
+            {
+                Console.WriteLine("\n¿Desea realizar otro cambio de cadete?");
+                Console.WriteLine("\'1\' para confirmar");
+                verif = Console.ReadKey().KeyChar;
 
+                if (verif != '1')
+                {
+                    break;
+                }
+            }
+
+            Console.Write("\nSeleccione el ID del cadete que posee el pedido a cambiar: ");
+            int idCadeteBase = Convert.ToInt32(Console.ReadLine());
+            Cadete cadeteBase = null;
+            foreach (var item in cadetes)
+            {
+                if (idCadeteBase == item.Id)
+                {
+                    cadeteBase = item;
+                }
+            }
+
+            if (cadeteBase != null)
+            {
+                if (cadeteBase.Pedidos.Count() > 0)
+                {
+                    Console.Write("\nSeleccione el Nro de pedido a cambiar de cadete: ");
+                    int nroPedido = Convert.ToInt32(Console.ReadLine());
+                    Pedido pedidoSeleccionado = null;
+                    foreach (var item in cadeteBase.Pedidos)
+                    {
+                        if (nroPedido == item.NroPedido)
+                        {
+                            pedidoSeleccionado = item;
+                        }
+                    }
+
+                    if (pedidoSeleccionado != null)
+                    {
+                        Console.Write("\nSeleccione el ID del cadete que recibirá el pedido: ");
+                        int idCadeteACambiar = Convert.ToInt32(Console.ReadLine());
+                        Cadete cadeteACambiar = null;
+                        foreach (var item in cadetes)
+                        {
+                            if (idCadeteACambiar == item.Id)
+                            {
+                                cadeteACambiar = item;
+                            }
+                        }
+
+                        if (cadeteACambiar != null)
+                        {
+                            if (cadeteBase != cadeteACambiar)
+                            {
+                                Console.WriteLine($"\n¿Está seguro que desea cambiar el pedido Nro {pedidoSeleccionado.NroPedido} a nombre de {pedidoSeleccionado.Costumer.Nombre} del cadete {cadeteBase.Nombre} a {cadeteACambiar.Nombre}?");
+                                Console.WriteLine("\'1\' para confirmar");
+                                verif = Console.ReadKey().KeyChar;
+
+                                if (verif == '1')
+                                {
+                                    cadeteACambiar.Pedidos.Add(pedidoSeleccionado);
+                                    cadeteBase.Pedidos.Remove(pedidoSeleccionado);
+                                    Console.WriteLine("\nCambio de cadete exitoso");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\nCambio de cadete cancelado");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nNo se puede cambiar el pedido al mismo cadete");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nNo existe tal cadete");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nNo existe tal pedido");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nEl cadete seleccionado no posee ningún pedido seleccionado");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\nNo existe tal cadete");
+            }
+
+            repe++;
+        } while (true);
     }
 
     private static void CambiarDeEstado(List<Cadete> cadetes)
@@ -179,11 +303,11 @@ internal class Program
                                 if (verif == '1')
                                 {
                                     pedidoSeleccionado.Estado = Convert.ToString((status)est);
-                                    Console.WriteLine("\nAsignación exitosa");
+                                    Console.WriteLine("\nCambio de estado exitoso");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("\nAsignación cancelada");
+                                    Console.WriteLine("\nCambio de estado cancelado");
                                 }
                             }
                             else
@@ -200,8 +324,6 @@ internal class Program
                     {
                         Console.WriteLine("\nNo existe tal pedido");
                     }
-
-                    repe++;
                 }
                 else
                 {
@@ -409,5 +531,6 @@ internal class Program
         var cli = new Cliente(i, eleccion);
         var ped = new Pedido(i, 1, cli);
         listaPedidos.Add(ped);
+        Console.WriteLine("\nPedido creado exitosamente");
     }
 }
