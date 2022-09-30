@@ -116,12 +116,12 @@ internal class Program
 
     private static void FinDeJornada(List<Cadete> listaCadetes)
     {
-        int montoTotal = 0, montoPorCadete, pedidosTotales = 0, pedidosPorCadete;
+        int montoTotal = 0, montoPorCadete, pedidosTotales = 0, pedidosPorCadete, montoBase = 300;
 
         foreach (var item in listaCadetes)
         {
-            montoPorCadete = item.JornalACobrar();
-            pedidosPorCadete = montoPorCadete / 300;
+            montoPorCadete = item.JornalACobrar(montoBase);
+            pedidosPorCadete = montoPorCadete / montoBase;
             Console.WriteLine($"\nCadete: {item.Nombre}");
             Console.WriteLine($"Paquetes entregados: {pedidosPorCadete}");
             Console.WriteLine($"Dinero ganado: {montoPorCadete}");
