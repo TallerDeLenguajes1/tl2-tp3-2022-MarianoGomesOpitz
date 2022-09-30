@@ -58,9 +58,10 @@ internal class Program
         ///////////////////////////////////////////////////////////////////
         char conf;      //Variable para manejar la interfaz principal
         int pedidosCreados = 1;
+        Console.WriteLine($"\nBienvenido a la interfaz de consola de la cadetería {cadeteria.Nombre}");
         do
         {
-            Console.WriteLine("\n\nQue acción desea llevar a cabo");
+            Console.WriteLine("\n\n¿Qué acción desea llevar a cabo?");
             Console.WriteLine("Mostrar información: \'1\'");
             Console.WriteLine("Dar de alta un pedido: \'2\'");
             Console.WriteLine("Asignar un pedido a un cadete: \'3\'");
@@ -489,7 +490,7 @@ internal class Program
     }
     private static void MostrarInfo(Cadeteria cadeteria)
     {
-        Console.WriteLine($"\nCadetería: {cadeteria.Nombre}");
+        Console.WriteLine($"\nNombre de la cadetería: {cadeteria.Nombre}");
         Console.WriteLine($"Teléfono: {cadeteria.Telefono}");
         Console.WriteLine($"Cadetes:");
         foreach (var item_1 in cadeteria.Cadetes)
